@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evolução da IA: Do Sci-Fi às Aplicações Cotidianas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Cor de fundo suave */
+        }
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2.5rem; /* 40px */
+            padding-left: 2.5rem; /* 40px */
+        }
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+        .timeline-marker {
+            position: absolute;
+            left: 0;
+            top: 0.125rem; /* 2px */
+            width: 1.25rem; /* 20px */
+            height: 1.25rem; /* 20px */
+            background-color: #3b82f6; /* Azul */
+            border-radius: 50%;
+            border: 3px solid #ffffff; /* Borda branca para destacar */
+            z-index: 10;
+        }
+        .timeline-line {
+            position: absolute;
+            left: 0.5625rem; /* 9px (centro do marcador) */
+            top: 0.125rem; /* 2px */
+            bottom: 0;
+            width: 3px; /* Espessura da linha */
+            background-color: #9ca3af; /* Cinza para a linha */
+        }
+        .timeline-item:last-child .timeline-line {
+            display: none; /* Esconde a linha no último item */
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.75rem; /* 12px */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card-title {
+            font-size: 1.125rem; /* 18px */
+            font-weight: 600;
+            color: #1e3a8a; /* Azul escuro */
+        }
+        .card-content {
+            font-size: 0.875rem; /* 14px */
+            color: #4b5563; /* Cinza escuro */
+        }
+        .card-period {
+            font-size: 0.75rem; /* 12px */
+            font-weight: 600;
+            color: #3b82f6; /* Azul */
+            background-color: #dbeafe; /* Azul claro */
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Estilos para o Modal */
+        .modal {
+            display: none; /* Oculto por padrão */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5); /* Fundo escurecido */
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 2rem; /* 32px */
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 0.75rem; /* 12px */
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+            position: relative;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e5e7eb; /* Cinza claro */
+            padding-bottom: 1rem; /* 16px */
+            margin-bottom: 1rem; /* 16px */
+        }
+        .modal-title {
+            font-size: 1.25rem; /* 20px */
+            font-weight: 600;
+            color: #1e3a8a; /* Azul escuro */
+        }
+        .close-button {
+            color: #aaa;
+            font-size: 1.75rem; /* 28px */
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: #333; /* Preto */
+            text-decoration: none;
+        }
+        .modal-body {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #374151; /* Cinza mais escuro */
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        .loading-spinner {
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid #3b82f6; /* Blue */
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .gemini-button {
+            background-color: #2563eb; /* Azul mais forte */
+            color: white;
+            font-weight: 600;
+            padding: 0.5rem 1rem; /* 8px 16px */
+            border-radius: 0.5rem; /* 8px */
+            transition: background-color 0.2s;
+            margin-top: 1rem; /* 16px */
+            border: none;
+            cursor: pointer;
+        }
+        .gemini-button:hover {
+            background-color: #1d4ed8; /* Azul ainda mais forte */
+        }
+
+
+        /* Estilos para telas menores */
+        @media (max-width: 768px) {
+            .timeline-item {
+                padding-left: 2rem; /* 32px */
+            }
+            .card-title {
+                font-size: 1rem; /* 16px */
+            }
+            .card-content {
+                font-size: 0.8125rem; /* 13px */
+            }
+            .modal-content {
+                width: 90%;
+                margin: 15% auto;
+                padding: 1.5rem; /* 24px */
+            }
+            .modal-title {
+                font-size: 1.125rem; /* 18px */
+            }
+        }
+    </style>
+</head>
+<body class="antialiased text-gray-800 p-4 md:p-8">
+    <div class="container mx-auto max-w-3xl">
+        <header class="text-center mb-10 md:mb-16">
+            <h1 class="text-3xl md:text-4xl font-bold text-blue-700">Evolução da Inteligência Artificial</h1>
+            <p class="text-lg md:text-xl text-gray-600 mt-2">Do Sci-Fi às Aplicações Cotidianas</p>
+        </header>
+
+        <div class="relative">
+            <div class="timeline-line hidden md:block" style="top: 0.125rem; bottom: 0; left: 0.5625rem; width: 3px; background-color: #9ca3af; position: absolute;"></div>
+
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-line"></div>
+                <div class="card p-5 md:p-6 ml-4 md:ml-0">
+                    <span class="card-period">Décadas de 1920-1950</span>
+                    <h2 class="card-title mb-2">Conceitos Iniciais e Ficção Científica</h2>
+                    <p class="card-content">
+                        Ideias de máquinas pensantes e autômatos surgem na ficção científica (Ex: "R.U.R." de Karel Čapek, Robôs de Asimov). Alan Turing propõe o "Teste de Turing" para avaliar a inteligência de uma máquina. Primeiros conceitos de redes neurais.
+                    </p>
+                    <button class="gemini-button" data-prompt="Fale mais sobre os conceitos iniciais da Inteligência Artificial e sua forte presença na ficção científica entre 1920 e 1950. Destaque marcos como o Teste de Turing e obras influentes." data-title="Conceitos Iniciais e Ficção Científica (1920-1950)">✨ Explorar com IA</button>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-line"></div>
+                <div class="card p-5 md:p-6 ml-4 md:ml-0">
+                    <span class="card-period">1950s - 1970s</span>
+                    <h2 class="card-title mb-2">O Nascimento da IA e Primeiros Programas</h2>
+                    <p class="card-content">
+                        O termo "Inteligência Artificial" é cunhado na Conferência de Dartmouth (1956). Desenvolvimento dos primeiros programas de IA, como o "Logic Theorist" e "General Problem Solver". Entusiasmo inicial e promessas ambiciosas.
+                    </p>
+                    <button class="gemini-button" data-prompt="Detalhe o nascimento da Inteligência Artificial entre as décadas de 1950 e 1970. Explique a importância da Conferência de Dartmouth e os primeiros programas de IA como o 'Logic Theorist'." data-title="O Nascimento da IA (1950s-1970s)">✨ Explorar com IA</button>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-line"></div>
+                <div class="card p-5 md:p-6 ml-4 md:ml-0">
+                    <span class="card-period">1970s - 1980s</span>
+                    <h2 class="card-title mb-2">"Inverno da IA" e Sistemas Especialistas</h2>
+                    <p class="card-content">
+                        Redução de financiamento devido a limitações e promessas não cumpridas ("Inverno da IA"). Surgimento dos Sistemas Especialistas, programas baseados em regras para resolver problemas específicos em domínios limitados (Ex: MYCIN para diagnósticos médicos).
+                    </p>
+                    <button class="gemini-button" data-prompt="Explique o período conhecido como 'Inverno da IA' nas décadas de 1970 e 1980, e como os Sistemas Especialistas surgiram como uma aplicação prática da IA nesse contexto." data-title="'Inverno da IA' e Sistemas Especialistas (1970s-1980s)">✨ Explorar com IA</button>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-line"></div>
+                <div class="card p-5 md:p-6 ml-4 md:ml-0">
+                    <span class="card-period">1990s - 2000s</span>
+                    <h2 class="card-title mb-2">Ascensão do Machine Learning</h2>
+                    <p class="card-content">
+                        Renovado interesse em Machine Learning e redes neurais. Algoritmos como Support Vector Machines (SVMs) e árvores de decisão ganham popularidade. Aumento da capacidade computacional e disponibilidade de dados impulsionam avanços. IA começa a ser usada em reconhecimento de voz e imagem de forma mais robusta.
+                    </p>
+                    <button class="gemini-button" data-prompt="Descreva a ascensão do Machine Learning e o ressurgimento das redes neurais entre os anos 1990 e 2000. Quais fatores impulsionaram esses avanços na IA?" data-title="Ascensão do Machine Learning (1990s-2000s)">✨ Explorar com IA</button>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-line"></div>
+                <div class="card p-5 md:p-6 ml-4 md:ml-0">
+                    <span class="card-period">2010s</span>
+                    <h2 class="card-title mb-2">Explosão do Deep Learning e Big Data</h2>
+                    <p class="card-content">
+                        Avanços significativos em Deep Learning (redes neurais profundas) revolucionam áreas como visão computacional e processamento de linguagem natural. O Big Data fornece o volume de informações necessário para treinar modelos complexos. Surgem assistentes virtuais (Siri, Alexa, Google Assistant).
+                    </p>
+                    <button class="gemini-button" data-prompt="Detalhe a explosão do Deep Learning na década de 2010 e o papel crucial do Big Data. Como isso impactou áreas como visão computacional e o surgimento de assistentes virtuais?" data-title="Deep Learning e Big Data (2010s)">✨ Explorar com IA</button>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="card p-5 md:p-6 ml-4 md:ml-0">
+                    <span class="card-period">2020s - Presente</span>
+                    <h2 class="card-title mb-2">IA Generativa e Integração Ampla</h2>
+                    <p class="card-content">
+                        Popularização de Modelos de Linguagem Grandes (LLMs) como GPT, capazes de gerar texto, código e imagens. IA se torna onipresente em motores de busca, recomendações, tradução automática, carros autônomos (em desenvolvimento), ferramentas de produtividade e criação de conteúdo. Discussões éticas e sobre o futuro da IA se intensificam.
+                    </p>
+                    <button class="gemini-button" data-prompt="Explique o que é IA Generativa e como os Modelos de Linguagem Grandes (LLMs) se popularizaram a partir de 2020. Quais são as principais aplicações atuais e os debates éticos envolvidos?" data-title="IA Generativa e Integração Ampla (2020s-Presente)">✨ Explorar com IA</button>
+                </div>
+            </div>
+        </div>
+
+        <footer class="text-center mt-10 md:mt-16 py-6 border-t border-gray-300">
+            <p class="text-sm text-gray-500">Esta linha do tempo é uma representação simplificada da evolução da IA. Clique em "✨ Explorar com IA" para mais detalhes.</p>
+        </footer>
+    </div>
+
+    <div id="geminiModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle" class="modal-title">Explorando com IA</h3>
+                <span class="close-button" onclick="closeModal()">&times;</span>
+            </div>
+            <div id="modalBody" class="modal-body">
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Elementos do Modal
+        const modal = document.getElementById('geminiModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+        const defaultModalText = '<div class="loading-spinner"></div>';
+
+        // Função para abrir o modal
+        function openModal() {
+            modalTitle.textContent = 'Carregando Informações...';
+            modalBody.innerHTML = defaultModalText; // Mostra o spinner
+            modal.style.display = 'block';
+        }
+
+        // Função para fechar o modal
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        // Fechar o modal se o usuário clicar fora do conteúdo
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // Adicionar event listeners aos botões Gemini
+        document.querySelectorAll('.gemini-button').forEach(button => {
+            button.addEventListener('click', async function() {
+                const prompt = this.dataset.prompt;
+                const title = this.dataset.title;
+                
+                openModal();
+                modalTitle.textContent = `Explorando: ${title}`;
+
+                try {
+                    // Simulação da chamada à API Gemini
+                    // Substitua esta parte pela chamada real à API Gemini
+                    console.log(`Chamando Gemini API com o prompt: ${prompt}`);
+                    
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    const payload = { contents: chatHistory };
+                    const apiKey = ""; // Deixe vazio, será gerenciado pelo ambiente
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                    
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        console.error('Erro da API Gemini:', errorData);
+                        throw new Error(`Erro na API: ${response.statusText}. Detalhes: ${JSON.stringify(errorData.error?.message || errorData)}`);
+                    }
+                    
+                    const result = await response.json();
+                    
+                    let generatedText = "Não foi possível obter uma resposta da IA no momento.";
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        generatedText = result.candidates[0].content.parts[0].text;
+                        // Simples formatação para parágrafos
+                        generatedText = generatedText.split('\\n').map(p => `<p class="mb-2">${p}</p>`).join('');
+                    } else {
+                        console.warn("Resposta da API Gemini não continha o texto esperado:", result);
+                    }
+                    
+                    modalBody.innerHTML = generatedText;
+
+                } catch (error) {
+                    console.error('Erro ao chamar a API Gemini:', error);
+                    modalBody.innerHTML = `<p class="text-red-600">Ocorreu um erro ao buscar informações adicionais: ${error.message}. Por favor, tente novamente mais tarde.</p>`;
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
